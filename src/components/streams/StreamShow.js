@@ -1,8 +1,38 @@
-import React from 'react';
+import React from "react";
+import flv from "flv.js";
+import { connect } from "react-redux";
+import { fetchStream } from "../../actions";
 
-const StreamShow = () => {
-    return <div>Stream Show</div>
+class StreamShow extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.videoRef = React.createRef();
+  }
+  componentDidMount() {
+    this.props.fetchStream(this.props.match.params.id);
+  }
+  render() {
+    if (!this.props.stream) {
+      return <div>Oh, bad show all around.</div>;
+    }
+
+    const { title, description } = this.props.stream;
+
+    return (
+      <div>
+        <video ref={this.videoRef} />
+        <h1>{title}</h1>
+        <h5>{description}</h5>
+      </div>
+    );
+  }
 }
+const mapStateToProps = (state, ownProps) => {
+  return { stream: state.streams[ownProps.match.params.id] };
+};
 
-
-export default StreamShow
+export default connect(
+  mapStateToProps,
+  { fetchStream }
+)(StreamShow);
